@@ -1,2 +1,4 @@
-# beam
-Phaser Beam
+# Beam Renderer
+
+![beam](logo.png)
+
