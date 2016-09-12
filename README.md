@@ -2,3 +2,18 @@
 
 ![beam](logo.png)
 
+Philosophy:
+
+* ES6 (+ ES5 transpiled lib provided)
+* TypeScript Defs
+* Game orientated WebGL and Canvas Renderer
+* Rendering features only: No asset loader, interactions, etc.
+
+## v1.0
+
+* Transform Class with immediate propagation + dirty parent checks
+* Transform features: Scale, Rotation, Position
+* Dirty parent checks
+* Render filled rectangles (WebGL + Canvas) based on Transform
+* Rectangle features: Size, Color
+* Context loss handling
