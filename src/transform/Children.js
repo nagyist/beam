@@ -50,6 +50,8 @@ export default class Children {
 
         this.transform.dirty = true;
 
+        this.transform.updateAncestors();
+
         return child;
     }
 

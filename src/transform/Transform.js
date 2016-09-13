@@ -55,12 +55,10 @@ export default class Transform {
 
     setContextTransform (context)
     {
-        // if (this.dirty)
-        // {
-            //  Needs to start from the top-most dirty node, so it doesn't matter
-            //  where we render from in the display list, it's always correct
-            // this.update();
-        // }
+        if (this.dirty)
+        {
+            this.updateAncestors();
+        }
 
         context.setTransform(
             this.world.a,
@@ -203,7 +201,6 @@ export default class Transform {
         //  and any of its children too
 
         return this.update();
-
     }
 
     update ()
