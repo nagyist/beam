@@ -18,28 +18,28 @@
 
         //  Create a Transform
 
-        var t1 = beam.createTransform(null, 0, 0);
-        var t2 = beam.createTransform(t1, 0, 0);
+        var t1 = beam.createTransform();
+        var t2 = beam.createTransform(t1);
 
         //  Manipulate it
 
+        t1.name = 'parent';
         t1.x = 200;
         t1.y = 200;
-        t1.rotation = 0.4;
+        // t1.rotation = 0.4;
 
+        t2.name = 'child';
         t2.x = 16;
         t2.y = 16;
-        t2.rotation = 0.4;
+        // t2.rotation = 0.4;
 
         //  Render it
 
-        context.setTransform(1, 0, 0, 1, 0, 0);
-
-        context.setTransform(t1.world.a, t1.world.b, t1.world.c, t1.world.d, t1.world.tx, t1.world.ty);
+        t1.setContextTransform(context);
         context.fillStyle = 'rgba(255,0,0,1)';
         context.fillRect(0, 0, 128, 128);
             
-        context.setTransform(t2.world.a, t2.world.b, t2.world.c, t2.world.d, t2.world.tx, t2.world.ty);
+        t2.setContextTransform(context);
         context.fillStyle = 'rgba(255,255,0,1)';
         context.fillRect(0, 0, 64, 64);
 

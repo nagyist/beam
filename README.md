@@ -2,17 +2,35 @@
 
 ![beam](logo.png)
 
-Philosophy:
+"Beam is a tiny, game focused, WebGL and Canvas Renderer."
+
+## To Build
+
+After `npm install`:
+
+`rollup -c`
+
+Will output the build files to the `dist` folder.
+
+## Examples
+
+Can be found in `examples`
+
+## Philosophy:
 
 * ES6 (+ ES5 transpiled lib provided)
 * TypeScript Defs
 * Roll-Up (tree shaking) module builder
-* Game orientated WebGL and Canvas Renderer
 * Rendering features only: No asset loader, interactions, etc.
 
-## v0.1
+## Change Log
 
-September 12th 2016 Done:
+### September 13th 2016
+
+* Deferred Transform class option (dirty flag check)
+* Core child management functions (removeChild, addChildAt, getChildAt, etc)
+
+### September 12th 2016
 
 * Transform Class with immediate propagation to children.
 * Transform features: Scale, Rotation, Position, Pivot.
@@ -20,9 +38,8 @@ September 12th 2016 Done:
 
 ## TODO
 
+* Bounds calculation
 * Dirty parent checks
-* Deferred Transform class option (dirty flag check)
-* Core child management functions (removeChild, addChildAt, getChildAt, etc)
 * Interpolation Option
 * Shear Tests
 * Get Position Functions (for hit testing when deeply translated)

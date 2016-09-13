@@ -18,22 +18,20 @@
 
         //  Create a Transform
 
-        var t1 = beam.createTransform(null, 100, 200);
+        var t1 = beam.createTransform();
 
         //  Manipulate it
 
         t1.x = 200;
         t1.y = 200;
         t1.rotation = 0.4;
-        t1.scaleX = 0.5;
+        t1.scaleX = 2.5;
 
         //  Render it
 
-        context.fillStyle = 'rgba(255,0,0,0.8)';
+        t1.setContextTransform(context);
 
-        context.setTransform(1, 0, 0, 1, 0, 0);
-
-        context.setTransform(t1.world.a, t1.world.b, t1.world.c, t1.world.d, t1.world.tx, t1.world.ty);
+        context.fillStyle = 'rgba(255,0,0,1)';
 
         context.fillRect(0, 0, 128, 128);
             

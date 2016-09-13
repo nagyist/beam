@@ -13,11 +13,15 @@ export default class Transform {
      */
     constructor (parent = null, x = 0, y = 0, scaleX = 1, scaleY = 1, shearX = 0, shearY = 0)
     {
+        this.name = '';
+
         //  Local Transform
         this.local = { a: scaleX, b: shearY, c: shearX, d: scaleY, tx: x, ty: y };
 
         //  World Transform
         this.world = { a: scaleX, b: shearY, c: shearX, d: scaleY, tx: x, ty: y };
+
+        this.hasLocalRotation = false;
 
         //  Private value holders, accessed via the getters and setters
         this._posX = x;
@@ -30,6 +34,13 @@ export default class Transform {
         this._pivotX = 0;
         this._pivotY = 0;
 
+        this._cacheA = 1;
+        this._cacheB = 0;
+        this._cacheC = 0;
+        this._cacheD = 1;
+        this._cacheSR = 0;
+        this._cacheCR = 0;
+
         this._worldRotation = 0;
         this._worldScaleX = scaleX;
         this._worldScaleY = scaleY;
@@ -40,6 +51,8 @@ export default class Transform {
         this.parent = parent;
 
         this.children = [];
+        this.hasChildren = false;
+        // this.hasDirtyChild = false;
 
         if (parent)
         {
@@ -47,40 +60,114 @@ export default class Transform {
         }
         else
         {
-            this.update();
+            // this.update();
         }
     }
 
     addChild (child)
     {
+        this.hasChildren = true;
+
         child.parent = this;
 
         this.children.push(child);
 
-        child.update(this);
+        // child.update(this);
+    }
+
+    getDirtyRoot ()
+    {
+        let node = this.parent;
+
+        while (node.dirty)
+        {
+            node = node.parent;
+        }
+
+        return node;
+    }
+
+    updateDirectFromRoot ()
+    {
+        //  Gets all parent nodes, starting from this Transform
+        //  Then updates from the top, down, but only on the ancestors,
+        //  not any other children - will give us accurate worldX etc properties
+    }
+
+    setContextTransform (context)
+    {
+        if (this.dirty)
+        {
+            //  Needs to start from the top-most dirty node, so it doesn't matter
+            //  where we render from in the display list, it's always correct
+            this.update();
+        }
+
+        context.setTransform(
+            this.world.a,
+            this.world.b,
+            this.world.c,
+            this.world.d,
+            this.world.tx,
+            this.world.ty);
+
+        return this;
     }
 
     reset ()
     {
     }
 
-    update ()
+    //  Updates the Transform.world object, ready for rendering
+    //  Assuming this Transform is attached to the root (i.e. no parent)
+    updateFromRoot ()
     {
-        let parent = (this.parent) ? this.parent.world : ROOT;
+        if (this.hasLocalRotation)
+        {
+            console.log(this.name, 'Transform.updateFromRoot');
+
+            this.world.a = this._cacheA;
+            this.world.b = this._cacheB;
+            this.world.c = this._cacheC;
+            this.world.d = this._cacheD;
+            this.world.tx = this._posX - (this._pivotX * this._cacheA + this._pivotY * this._cacheC);
+            this.world.ty = this._posY - (this._pivotX * this._cacheB + this._pivotY * this._cacheD);
+
+            this._worldRotation = Math.atan2(-this._cacheC, this._cacheD);
+        }
+        else
+        {
+            console.log(this.name, 'Transform.updateFromRoot FAST');
+
+            this.world.a = this._scaleX;
+            this.world.b = 0;
+            this.world.c = 0;
+            this.world.d = this._scaleY;
+            this.world.tx = this._posX - this._pivotX * this._scaleX;
+            this.world.ty = this._posY - this._pivotY * this._scaleY;
+
+            this._worldRotation = 0;
+        }
+
+        this._worldScaleX = this._scaleX;
+        this._worldScaleY = this._scaleY;
+
+        return this;
+    }
+
+    updateFromParent ()
+    {
+        let parent = this.parent.world;
         let tx = 0;
         let ty = 0;
 
-        if (this._rotation % PI2)
+        if (this.hasLocalRotation)
         {
-            //  Local Rotation
-
-            let sr = Math.sin(this._rotation);
-            let cr = Math.cos(this._rotation);
-
-            let a = cr * this._scaleX;
-            let b = sr * this._scaleX;
-            let c = -sr * this._scaleY;
-            let d = cr * this._scaleY;
+            console.log(this.name, 'Transform.updateFromParent');
+            let a = this._cacheA;
+            let b = this._cacheB;
+            let c = this._cacheC;
+            let d = this._cacheD;
 
             tx = this._posX - (this._pivotX * a + this._pivotY * c);
             ty = this._posY - (this._pivotX * b + this._pivotY * d);
@@ -94,8 +181,7 @@ export default class Transform {
         }
         else
         {
-            //  No Rotation
-
+            console.log(this.name, 'Transform.updateFromParent FAST');
             tx = this._posX - this._pivotX * this._scaleX;
             ty = this._posY - this._pivotY * this._scaleY;
 
@@ -113,63 +199,37 @@ export default class Transform {
         this._worldScaleX = this._scaleX * Math.sqrt(this.world.a * this.world.a + this.world.c * this.world.c);
         this._worldScaleY = this._scaleY * Math.sqrt(this.world.b * this.world.b + this.world.d * this.world.d);
 
+        return this;
+    }
+
+    update ()
+    {
+        if (this.parent)
+        {
+            this.updateFromParent();
+        }
+        else
+        {
+            this.updateFromRoot();
+        }
+
         this.dirty = false;
 
         //  Update children
 
-        for (let i = 0; i < this.children.length; i++)
+        if (this.hasChildren)
         {
-            this.children[i].update();
+            for (let i = 0; i < this.children.length; i++)
+            {
+                this.children[i].update();
+            }
         }
 
         return this;
     }
 
-    decomposeMatrix (mat)
-    {
-        //  QR Decomposition
-
-        let a = mat.a;
-        let b = mat.b;
-        let c = mat.c;
-        let d = mat.d;
-        let e = mat.e;
-        let f = mat.f;
-
-        let translate = { x: e, y: f };
-        let rotation = 0;
-        let scale = { x: 1, y: 1 };
-        let skew = { x: 0, y: 0 };
-
-        let determ = (a * d) - (b * c);
-
-        if (a || b)
-        {
-            let r = Math.sqrt((a * a) + (b * b));
-            rotation = (b > 0) ? Math.acos(a / r) : -Math.acos(a / r);
-            scale = { x: r, y: determ / r };
-            skew.x = Math.atan(((a * c) + (b * d)) / (r * r));
-        }
-        else if (c || d)
-        {
-            var s = Math.sqrt((c * c) + (d * d));
-            rotation = (Math.PI * 0.5) - (d > 0 ? Math.acos(-c / s) : -Math.acos(c / s));
-            scale = {x: determ / s, y: s};
-            skew.y = Math.atan(((a * c) + (b * d)) / (s * s));
-        }
-        else
-        {
-            scale = { x: 0, y: 0 };
-        }
-
-        return {
-            translate,
-            rotation,
-            scale,
-            skew
-        };
-
-    }
+    //  LOCAL values (without parent taken into account)
+    //  Can be read immediately, don't need to update anything
 
     get x ()
     {
@@ -216,28 +276,58 @@ export default class Transform {
         return this._rotation;
     }
 
+    //  GLOBAL read-only values
+    //  Need *all* parents taken into account to get the correct values
+
     get worldRotation ()
     {
+        if (this.dirty)
+        {
+            //  This needs to start at the root
+            //  Otherwise a parent `n` steps up the chain may have changed
+            this.update();
+        }
+
         return this._worldRotation;
     }
 
     get worldScaleX ()
     {
+        if (this.dirty)
+        {
+            this.update();
+        }
+
         return this._worldScaleX;
     }
 
     get worldScaleY ()
     {
+        if (this.dirty)
+        {
+            this.update();
+        }
+
         return this._worldScaleY;
     }
 
     get worldX ()
     {
+        if (this.dirty)
+        {
+            this.update();
+        }
+
         return this.world.tx;
     }
 
     get worldY ()
     {
+        if (this.dirty)
+        {
+            this.update();
+        }
+
         return this.world.ty;
     }
 
@@ -248,7 +338,9 @@ export default class Transform {
         this._posX = x;
         this._posY = y;
 
-        return this.update();
+        this.dirty = true;
+
+        return this;
     }
 
     setScale (x, y = x)
@@ -256,7 +348,11 @@ export default class Transform {
         this._scaleX = x;
         this._scaleY = y;
 
-        return this.update();
+        this.updateCache();
+
+        this.dirty = true;
+
+        return this;
     }
 
     setShear (x, y = x)
@@ -264,7 +360,9 @@ export default class Transform {
         this._shearX = x;
         this._shearY = y;
 
-        return this.update();
+        this.dirty = true;
+
+        return this;
     }
 
     setPivot (x, y = x)
@@ -272,70 +370,104 @@ export default class Transform {
         this._pivotX = x;
         this._pivotY = y;
 
-        return this.update();
+        this.dirty = true;
+
+        return this;
     }
 
     setRotation (rotation)
     {
-        this._rotation = rotation;
+        this.rotation = rotation;
 
-        return this.update();
+        return this;
     }
 
-    //  Setters
+    //  Setters for LOCAL properties
+    //
+    //  Setting these flags the Transform as being dirty.
+    //  However it doesn't propagate to children until one
+    //  of the WORLD properties of the child is read, or until
+    //  this Transform is updated or sent to a context
 
     set x (value)
     {
         this._posX = value;
-        this.update();
+        this.dirty = true;
     }
 
     set y (value)
     {
         this._posY = value;
-        this.update();
+        this.dirty = true;
     }
 
     set scaleX (value)
     {
         this._scaleX = value;
-        this.update();
+        this.dirty = true;
+        this.updateCache();
     }
 
     set scaleY (value)
     {
         this._scaleY = value;
-        this.update();
+        this.dirty = true;
+        this.updateCache();
     }
 
     set pivotX (value)
     {
         this._pivotX = value;
-        this.update();
+        this.dirty = true;
     }
 
     set pivotY (value)
     {
         this._pivotY = value;
-        this.update();
+        this.dirty = true;
     }
 
     set shearX (value)
     {
         this._shearX = value;
-        this.update();
+        this.dirty = true;
     }
 
     set shearY (value)
     {
         this._shearY = value;
-        this.update();
+        this.dirty = true;
     }
 
     set rotation (value)
     {
+        if (this._rotation === value)
+        {
+            return;
+        }
+
         this._rotation = value;
-        this.update();
+        this.dirty = true;
+
+        if (this._rotation % PI2)
+        {
+            this._cacheSR = Math.sin(this._rotation);
+            this._cacheCR = Math.cos(this._rotation);
+            this.updateCache();
+            this.hasLocalRotation = true;
+        }
+        else
+        {
+            this.hasLocalRotation = false;
+        }
+    }
+
+    updateCache ()
+    {
+        this._cacheA = this._cacheCR * this._scaleX;
+        this._cacheB = this._cacheSR * this._scaleX;
+        this._cacheC = -this._cacheSR * this._scaleY;
+        this._cacheD = this._cacheCR * this._scaleY;
     }
 
 }
