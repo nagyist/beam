@@ -42,7 +42,7 @@ export default class Transform {
 
         this.dirty = false;
 
-        this.parent = parent;
+        this.parent = null;
 
         //  Optional if Flat Display List?
         this.children = new Children(this);
@@ -118,7 +118,7 @@ export default class Transform {
 
         if (this.hasLocalRotation)
         {
-            console.log(this.name, 'Transform.updateFromParent');
+            console.log(this.name, 'Transform.updateFromParent', this.parent.name);
 
             let a = this.cache.a;
             let b = this.cache.b;
@@ -137,7 +137,7 @@ export default class Transform {
         }
         else
         {
-            console.log(this.name, 'Transform.updateFromParent FAST');
+            console.log(this.name, 'Transform.updateFromParent FAST', this.parent.name);
 
             tx = this._posX - this._pivotX * this._scaleX;
             ty = this._posY - this._pivotY * this._scaleY;
@@ -221,10 +221,7 @@ export default class Transform {
 
         //  Update children
 
-        if (this.children.size)
-        {
-            this.children.update();
-        }
+        this.children.update();
 
         return this;
     }

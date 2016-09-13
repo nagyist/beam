@@ -27,7 +27,7 @@ export default class Children {
 
     add (child)
     {
-        return this.addAt(child, this.data.length - 1);
+        return this.addAt(child, this.data.length);
     }
 
     addAt (child, index)
