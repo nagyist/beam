@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>Beam Example</title>
+        <script src="../dist/beam.js" type="text/javascript"></script>
+    </head>
+    <body>
+
+        <canvas id="canvas" width="800" height="600" style="background-color: #ff00ff"></canvas>
+
+        <script type="text/javascript">
+
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+
+        var beam = new Beam();
+
+        //  Create a root Transform
+
+        var size = 512;
+
+        var list = [];
+
+        for (var i = 0; i < 48; i++)
+        {
+            list.push({
+                transform: beam.createTransform(null, 400, 300).setPivot(size / 2),
+                size: size,
+                color: 'rgba(' + (size / 2) + ', 0, 255, 1)'
+            });
+
+            size -= 8;
+        }
+
+        requestAnimationFrame(() => render());
+
+        //  Render it
+
+        function render ()
+        {
+            context.setTransform(1, 0, 0, 1, 0, 0);
+            context.clearRect(0, 0, 800, 600);
+
+            var r = 0.005;
+
+            for (var i = 0; i < list.length; i++)
+            {
+                var d = list[i].transform;
+
+                d.rotation -= (r + i * 0.001);
+
+                context.setTransform(d.world.a, d.world.b, d.world.c, d.world.d, d.world.tx, d.world.ty);
+                context.fillStyle = list[i].color;
+                context.fillRect(0, 0, list[i].size, list[i].size);
+            }
+
+            requestAnimationFrame(() => render());
+
+        }
+
+        </script>
+
+    </body>
+</html>

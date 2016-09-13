@@ -14,7 +14,7 @@ export default {
     targets: [
         {
             dest: pkg['main'],
-            format: 'cjs',
+            format: 'umd',
             moduleName: 'Beam',
             sourceMap: true
         },
