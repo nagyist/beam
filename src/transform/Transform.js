@@ -1,4 +1,5 @@
-import { PI2, TAU, EPSILON } from './MathConstants.js';
+import { PI2, TAU, EPSILON } from '../core/MathConstants.js';
+import Children from './Children.js';
 
 /**
  * 2D Transformation Class
@@ -43,86 +44,13 @@ export default class Transform {
 
         this.parent = parent;
 
-        this.children = [];
-        this.hasChildren = false;
+        //  Optional if Flat Display List?
+        this.children = new Children(this);
 
         if (parent)
         {
-            parent.add(this);
+            parent.children.add(this);
         }
-    }
-
-    add (child)
-    {
-        //  Invalid child?
-        if (child === this || child.parent === this)
-        {
-            return child;
-        }
-
-        //  Child already parented? Remove it
-        if (child.parent)
-        {
-            child.parent.remove(child);
-        }
-
-        child.parent = this;
-
-        this.children.push(child);
-
-        this.hasChildren = true;
-
-        this.dirty = true;
-    }
-
-    addAt (child, index)
-    {
-
-    }
-
-    remove (child)
-    {
-        //  Invalid child?
-        if (child === this || child.parent !== this)
-        {
-            return child;
-        }
-
-        let index = this.children.indexOf(child);
-
-        if (index !== -1)
-        {
-            this.children.splice(index, 1);
-
-            child.parent = null;
-        }
-        
-        return child;
-
-    }
-
-    removeAt (index)
-    {
-        if (index < 0 || index > this.children.length)
-        {
-            let child = this.children.splice(index, 1);
-
-            child[0].parent = null;
-
-            return child[0].parent = null;
-        }
-
-        let child = this.getChildAt(index);
-
-        if (child)
-        {
-            child.parent = undefined;
-
-            this.children.splice(index, 1);
-        }
-
-        return child;
-
     }
 
     setContextTransform (context)
@@ -143,10 +71,6 @@ export default class Transform {
             this.world.ty);
 
         return this;
-    }
-
-    reset (x = 0, y = 0, scaleX = 1, scaleY = 1, shearX = 0, shearY = 0)
-    {
     }
 
     //  Updates the Transform.world object, ready for rendering
@@ -297,12 +221,9 @@ export default class Transform {
 
         //  Update children
 
-        if (this.hasChildren)
+        if (this.children.size)
         {
-            for (let i = 0; i < this.children.length; i++)
-            {
-                this.children[i].update();
-            }
+            this.children.update();
         }
 
         return this;

@@ -1,5 +1,5 @@
 import { version } from '../package.json';
-import Transform from './core/Transform.js';
+import Transform from './transform/Transform.js';
 
 export default class Beam
 {

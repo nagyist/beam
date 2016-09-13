@@ -52,9 +52,12 @@
         m.name = 'M';
 
         //  Updates from J and all ancestors (and children)
+        //  A, B, E, J, L and M will be correct after this
         // j.updateAncestors();
 
-        //  Updates root node + every child
+        //  Updates root node + every child (everything will be correct after this)
+        //  Doesn't need doing as setContextTransform does it as the root node
+        a.dirty = true;
         a.update();
 
         context.font = '24px sans-serif';
