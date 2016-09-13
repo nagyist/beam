@@ -7,7 +7,7 @@
     </head>
     <body>
 
-        <canvas id="canvas" width="800" height="600"></canvas>
+        <canvas id="canvas" width="800" height="600" style="background-color: #000"></canvas>
 
         <script type="text/javascript">
 
@@ -16,24 +16,26 @@
 
         var beam = new Beam();
 
-        let a = beam.createTransform();
+        let a = beam.createTransform(null, 400, 50);
 
-        let b = beam.createTransform(a);
-        let c = beam.createTransform(a);
+        let b = beam.createTransform(a, -200, 100);
+        let c = beam.createTransform(a, 200, 100);
 
-        let d = beam.createTransform(b);
-        let e = beam.createTransform(b);
-        let f = beam.createTransform(b);
+        let d = beam.createTransform(b, -100, 100);
+        let e = beam.createTransform(b, 0, 100);
+        let f = beam.createTransform(b, 100, 100);
 
-        let g = beam.createTransform(c);
-        let h = beam.createTransform(c);
-        let i = beam.createTransform(c);
+        let g = beam.createTransform(c, -100, 100);
+        let h = beam.createTransform(c, 0, 100);
+        let i = beam.createTransform(c, 100, 100);
 
-        let j = beam.createTransform(e);
-        let k = beam.createTransform(i);
+        let j = beam.createTransform(e, 0, 100);
+        let k = beam.createTransform(i, 0, 100);
 
-        let l = beam.createTransform(j);
-        let m = beam.createTransform(j);
+        let l = beam.createTransform(j, -100, 100);
+        let m = beam.createTransform(j, 100, 100);
+
+        let nodes = [ a, b, c, d, e, f, g, h, i, j, k, l, m ];
 
         a.name = 'A';
         b.name = 'B';
@@ -49,7 +51,24 @@
         l.name = 'L';
         m.name = 'M';
 
-        j.updateAncestors();
+        //  Updates from J and all ancestors (and children)
+        // j.updateAncestors();
+
+        //  Updates root node + every child
+        a.update();
+
+        context.font = '24px sans-serif';
+
+        nodes.forEach(function (node)
+        {
+            node.setContextTransform(context);
+
+            context.fillStyle = 'rgba(0,255,0,1)';
+            context.fillRect(0, 0, 32, 32);
+
+            context.fillStyle = 'rgba(0,0,0,1)';
+            context.fillText(node.name, 8, 24);
+        });
 
         </script>
 
