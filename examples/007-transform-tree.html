@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>Beam Example</title>
+        <script src="../dist/beam.js" type="text/javascript"></script>
+    </head>
+    <body>
+
+        <canvas id="canvas" width="800" height="600"></canvas>
+
+        <script type="text/javascript">
+
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+
+        var beam = new Beam();
+
+        let a = beam.createTransform();
+
+        let b = beam.createTransform(a);
+        let c = beam.createTransform(a);
+
+        let d = beam.createTransform(b);
+        let e = beam.createTransform(b);
+        let f = beam.createTransform(b);
+
+        let g = beam.createTransform(c);
+        let h = beam.createTransform(c);
+        let i = beam.createTransform(c);
+
+        let j = beam.createTransform(e);
+        let k = beam.createTransform(i);
+
+        let l = beam.createTransform(j);
+        let m = beam.createTransform(j);
+
+        a.name = 'A';
+        b.name = 'B';
+        c.name = 'C';
+        d.name = 'D';
+        e.name = 'E';
+        f.name = 'F';
+        g.name = 'G';
+        h.name = 'H';
+        i.name = 'I';
+        j.name = 'J';
+        k.name = 'K';
+        l.name = 'L';
+        m.name = 'M';
+
+        j.updateAncestors();
+
+        </script>
+
+    </body>
+</html>

@@ -58,10 +58,6 @@ export default class Transform {
         {
             parent.addChild(this);
         }
-        else
-        {
-            // this.update();
-        }
     }
 
     addChild (child)
@@ -71,27 +67,53 @@ export default class Transform {
         child.parent = this;
 
         this.children.push(child);
-
-        // child.update(this);
     }
 
-    getDirtyRoot ()
+    updateAncestors ()
     {
-        let node = this.parent;
-
-        while (node.dirty)
+        if (!this.parent)
         {
-            node = node.parent;
+            return this;
         }
 
-        return node;
-    }
+        console.log(this.name, 'updateAncestors');
 
-    updateDirectFromRoot ()
-    {
         //  Gets all parent nodes, starting from this Transform
         //  Then updates from the top, down, but only on the ancestors,
         //  not any other children - will give us accurate worldX etc properties
+
+        let node = this.parent;
+        let nodes = [];
+
+        do
+        {
+            nodes.push(node);
+            node = node.parent;
+        }
+        while (node);
+
+        //  We've got all the ancestors in the 'nodes' array, let's loop it
+
+        while (nodes.length)
+        {
+            node = nodes.pop();
+
+            if (node.parent)
+            {
+                node.updateFromParent();
+            }
+            else
+            {
+                node.updateFromRoot();
+            }
+        }
+
+        //  By this point all of this Transforms ancestors have been
+        //  updated, in the correct order, so we can now do this one
+        //  and any of its children too
+
+        return this.update();
+
     }
 
     setContextTransform (context)
@@ -164,6 +186,7 @@ export default class Transform {
         if (this.hasLocalRotation)
         {
             console.log(this.name, 'Transform.updateFromParent');
+
             let a = this._cacheA;
             let b = this._cacheB;
             let c = this._cacheC;
@@ -182,6 +205,7 @@ export default class Transform {
         else
         {
             console.log(this.name, 'Transform.updateFromParent FAST');
+
             tx = this._posX - this._pivotX * this._scaleX;
             ty = this._posY - this._pivotY * this._scaleY;
 

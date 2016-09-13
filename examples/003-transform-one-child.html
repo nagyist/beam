@@ -31,13 +31,15 @@
         t2.name = 'child';
         t2.x = 16;
         t2.y = 16;
-        // t2.rotation = 0.4;
+        t2.rotation = 0.4;
 
         //  Render it
 
         t1.setContextTransform(context);
         context.fillStyle = 'rgba(255,0,0,1)';
         context.fillRect(0, 0, 128, 128);
+
+        //  This works, but if you render t2 first, none of the t1 updates are taken into consideration
             
         t2.setContextTransform(context);
         context.fillStyle = 'rgba(255,255,0,1)';
