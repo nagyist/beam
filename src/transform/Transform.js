@@ -55,9 +55,14 @@ export default class Transform {
 
     setContextTransform (context)
     {
+        //  Have they modified a local property? (like x, y, scale, etc)
+        //  If so, we need to update, and spread it down to the children.
+        //  It's possible this has already been called by an update further
+        //  up the display list too.
+
         if (this.dirty)
         {
-            this.updateAncestors();
+            this.update();
         }
 
         context.setTransform(
@@ -159,14 +164,19 @@ export default class Transform {
 
     updateAncestors ()
     {
+        //  No parent? Then just update the children and leave, our job is done
         if (!this.parent)
         {
+            this.updateFromRoot();
+            this.children.update();
+            this.dirty = false;
+
             return this;
         }
 
         console.log(this.name, 'updateAncestors');
 
-        //  Gets all parent nodes, starting from this Transform
+        //  Gets all parent nodes, starting from this Transform.
         //  Then updates from the top, down, but only on the ancestors,
         //  not any other children - will give us accurate worldX etc properties
 
@@ -214,11 +224,11 @@ export default class Transform {
             this.updateFromRoot();
         }
 
-        this.dirty = false;
-
         //  Update children
 
         this.children.update();
+
+        this.dirty = false;
 
         return this;
     }
@@ -276,52 +286,35 @@ export default class Transform {
 
     get worldRotation ()
     {
-        if (this.dirty)
-        {
-            //  This needs to start at the root
-            //  Otherwise a parent `n` steps up the chain may have changed
-            this.update();
-        }
+        this.updateAncestors();
 
         return this._worldRotation;
     }
 
     get worldScaleX ()
     {
-        if (this.dirty)
-        {
-            this.update();
-        }
+        this.updateAncestors();
 
         return this._worldScaleX;
     }
 
     get worldScaleY ()
     {
-        if (this.dirty)
-        {
-            this.update();
-        }
+        this.updateAncestors();
 
         return this._worldScaleY;
     }
 
     get worldX ()
     {
-        if (this.dirty)
-        {
-            this.update();
-        }
+        this.updateAncestors();
 
         return this.world.tx;
     }
 
     get worldY ()
     {
-        if (this.dirty)
-        {
-            this.update();
-        }
+        this.updateAncestors();
 
         return this.world.ty;
     }
@@ -333,9 +326,7 @@ export default class Transform {
         this._posX = x;
         this._posY = y;
 
-        this.dirty = true;
-
-        return this;
+        return this.update();
     }
 
     setScale (x, y = x)
@@ -345,9 +336,7 @@ export default class Transform {
 
         this.updateCache();
 
-        this.dirty = true;
-
-        return this;
+        return this.update();
     }
 
     setShear (x, y = x)
@@ -355,9 +344,7 @@ export default class Transform {
         this._shearX = x;
         this._shearY = y;
 
-        this.dirty = true;
-
-        return this;
+        return this.update();
     }
 
     setPivot (x, y = x)
@@ -365,16 +352,14 @@ export default class Transform {
         this._pivotX = x;
         this._pivotY = y;
 
-        this.dirty = true;
-
-        return this;
+        return this.update();
     }
 
     setRotation (rotation)
     {
         this.rotation = rotation;
 
-        return this;
+        return this.update();
     }
 
     //  Setters for LOCAL properties
