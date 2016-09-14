@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>Beam Example</title>
+        <script src="../dist/beam.js" type="text/javascript"></script>
+    </head>
+    <body>
+
+        <script type="text/javascript">
+
+        var beam = new Beam();
+
+        var renderer = beam.createCanvasRenderer(800, 600).addToDOM().backgroundColor();
+
+        function between (min, max)
+        {
+            return Math.floor(Math.random() * (max - min + 1) + min);
+        }
+
+        var rects = [];
+
+        var image = new Image();
+
+        image.onload = function ()
+        {
+            for (let i = 0; i < 1000; i++)
+            {
+                var x = between(0, 800);
+                var y = between(0, 560);
+
+                rects.push(beam.createSprite(image, x, y));
+            }
+
+            render();
+        };
+
+        image.src = 'assets/32x32.png';
+
+        function render ()
+        {
+            renderer.cls();
+
+            for (let i = 0; i < rects.length; i++)
+            {
+                rects[i].x += 2;
+
+                if (rects[i].x > 800)
+                {
+                    rects[i].x = -32;
+                    rects[i].y = between(0, 560);
+                }
+
+                rects[i].render(renderer);
+            }
+
+            requestAnimationFrame(render);
+        }
+
+        </script>
+
+    </body>
+</html>

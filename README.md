@@ -29,7 +29,8 @@ Can be found in `examples`
 
 * Rectangle class added
 * First pass at CanvasRenderer added
-* New examples
+* Sprite class added
+* Many Rect and Many Image tests added (Transform code running fast, rendering eating CPU)
 
 ### September 13th 2016
 

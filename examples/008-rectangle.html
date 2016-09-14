@@ -11,23 +11,23 @@
 
         var beam = new Beam();
 
-        var renderer = beam.createCanvasRenderer(800, 600);
+        var renderer = beam.createCanvasRenderer(800, 600).addToDOM().backgroundColor();
 
-        renderer.backgroundColor();
+        var bob = beam.createRectangle(0, 0, 128, 64, 'rgba(0, 255, 0, 1)');
 
-        document.body.appendChild(renderer.canvas);
-
-        var bob = beam.createRectangle(200, 100, 128, 64, 'rgba(0, 255, 0, 1)');
+        bob.x = 64;
+        bob.y = 200;
 
         render();
 
         function render ()
         {
+            // bob.x++;
             bob.rotation += 0.01;
 
             renderer.cls();
 
-            bob.draw(renderer);
+            bob.render(renderer);
 
             requestAnimationFrame(render);
         }

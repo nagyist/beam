@@ -46,6 +46,13 @@ export default class CanvasRenderer
         return this;
     }
 
+    addToDOM ()
+    {
+        document.body.appendChild(this.canvas);
+
+        return this;
+    }
+
     crisp ()
     {
         const types = [ 'optimizeSpeed', 'crisp-edges', '-moz-crisp-edges', '-webkit-optimize-contrast', 'optimize-contrast', 'pixelated' ];
