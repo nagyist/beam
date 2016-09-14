@@ -82,7 +82,7 @@ export default class Transform {
     {
         if (this.hasLocalRotation)
         {
-            console.log(this.name, 'Transform.updateFromRoot');
+            // console.log(this.name, 'Transform.updateFromRoot');
 
             this.world.a = this.cache.a;
             this.world.b = this.cache.b;
@@ -95,7 +95,7 @@ export default class Transform {
         }
         else
         {
-            console.log(this.name, 'Transform.updateFromRoot FAST');
+            // console.log(this.name, 'Transform.updateFromRoot FAST');
 
             this.world.a = this._scaleX;
             this.world.b = 0;
@@ -121,7 +121,7 @@ export default class Transform {
 
         if (this.hasLocalRotation)
         {
-            console.log(this.name, 'Transform.updateFromParent', this.parent.name);
+            // console.log(this.name, 'Transform.updateFromParent', this.parent.name);
 
             let a = this.cache.a;
             let b = this.cache.b;
@@ -140,7 +140,7 @@ export default class Transform {
         }
         else
         {
-            console.log(this.name, 'Transform.updateFromParent FAST', this.parent.name);
+            // console.log(this.name, 'Transform.updateFromParent FAST', this.parent.name);
 
             tx = this._posX - this._pivotX * this._scaleX;
             ty = this._posY - this._pivotY * this._scaleY;
@@ -174,7 +174,7 @@ export default class Transform {
             return this;
         }
 
-        console.log(this.name, 'updateAncestors');
+        // console.log(this.name, 'updateAncestors');
 
         //  Gets all parent nodes, starting from this Transform.
         //  Then updates from the top, down, but only on the ancestors,

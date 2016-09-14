@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>Beam Example</title>
+        <script src="../dist/beam.js" type="text/javascript"></script>
+    </head>
+    <body>
+
+        <script type="text/javascript">
+
+        var beam = new Beam();
+
+        var renderer = beam.createCanvasRenderer(800, 600);
+
+        renderer.backgroundColor();
+
+        document.body.appendChild(renderer.canvas);
+
+        var bob = beam.createRectangle(200, 100, 128, 64, 'rgba(0, 255, 0, 1)');
+
+        render();
+
+        function render ()
+        {
+            bob.rotation += 0.01;
+
+            renderer.cls();
+
+            bob.draw(renderer);
+
+            requestAnimationFrame(render);
+        }
+
+        </script>
+
+    </body>
+</html>

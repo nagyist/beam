@@ -25,6 +25,12 @@ Can be found in `examples`
 
 ## Change Log
 
+### September 14th 2016
+
+* Rectangle class added
+* First pass at CanvasRenderer added
+* New examples
+
 ### September 13th 2016
 
 * Deferred Transform class option (dirty flag check)
