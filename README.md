@@ -25,6 +25,12 @@ Can be found in `examples`
 
 ## Change Log
 
+### September 15th 2016
+
+* WebGL Renderer added
+* Texture and BaseTexture classes added
+* Sprite updated to use Texture
+
 ### September 14th 2016
 
 * Rectangle class added

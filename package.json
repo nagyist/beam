@@ -1,6 +1,6 @@
 {
   "name": "beam",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Beam Renderer",
   "main": "dist/beam.js",
   "module": "dist/beam.mjs",

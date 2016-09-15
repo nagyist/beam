@@ -11,26 +11,30 @@
 
         var beam = new Beam();
 
-        var renderer = beam.createCanvasRenderer(800, 600).addToDOM().backgroundColor();
+        var renderer = beam.createWebGLRenderer(800, 600).addToDOM();
 
         function between (min, max)
         {
             return Math.floor(Math.random() * (max - min + 1) + min);
         }
 
-        var rects = [];
+        var sprites = [];
 
         var image = new Image();
 
         image.onload = function ()
         {
-            for (let i = 0; i < 1000; i++)
+            //  Create the sprites
+            for (let i = 0; i < 2000; i++)
             {
                 var x = between(0, 800);
                 var y = between(0, 560);
 
-                rects.push(beam.createSprite(image, x, y));
+                sprites.push(beam.createSprite(image, x, y));
             }
+
+            //  Push the texture onto the GPU
+            renderer.loadTexture(sprites[0].texture.baseTexture);
 
             render();
         };
@@ -41,18 +45,20 @@
         {
             renderer.cls();
 
-            for (let i = 0; i < rects.length; i++)
+            for (let i = 0; i < sprites.length; i++)
             {
-                rects[i].x += 2;
+                sprites[i].x += 2;
 
-                if (rects[i].x > 800)
+                if (sprites[i].x > 800)
                 {
-                    rects[i].x = -32;
-                    rects[i].y = between(0, 560);
+                    sprites[i].x = -32;
+                    sprites[i].y = between(0, 560);
                 }
 
-                rects[i].renderCanvas(renderer);
+                sprites[i].renderWebGL(renderer);
             }
+
+            renderer.flush();
 
             requestAnimationFrame(render);
         }
