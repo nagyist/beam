@@ -10,7 +10,7 @@ After `npm install`:
 
 `rollup -c`
 
-Will output the build files to the `dist` folder.
+Will output the build files to the `dist` folder. Needs an ES6 version of node (such as v5.6+)
 
 ## Examples
 
@@ -30,6 +30,7 @@ Can be found in `examples`
 * WebGL Renderer added
 * Texture and BaseTexture classes added
 * Sprite updated to use Texture
+* Blend Modes supported and working on the Textures
 
 ### September 14th 2016
 
@@ -51,11 +52,13 @@ Can be found in `examples`
 
 ## TODO
 
+* Minimal Loader? (or have as separate file?)
+* Cropped Textures
+* Texture Frames
+* Add Blend Modes to Canvas Renderer
+* Scissor / Mask renderer
 * Bounds calculation
 * Dirty parent checks
 * Interpolation Option
 * Shear Tests
 * Get Position Functions (for hit testing when deeply translated)
-* Render filled rectangles (WebGL + Canvas) based on Transform
-* Rectangle features: Size, Color
-* Context loss handling

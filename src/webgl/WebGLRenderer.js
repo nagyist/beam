@@ -1,3 +1,4 @@
+import * as BlendModes from '../webgl/BlendModes.js';
 
 export default class WebGLRenderer
 {
@@ -242,14 +243,12 @@ export default class WebGLRenderer
 
         //  Transparent
         // gl.clearColor(0, 0, 0, 0);
-
         //  Black
-        gl.clearColor(0, 0, 0, 1);
-
-        gl.clear(gl.COLOR_BUFFER_BIT);
+        // gl.clearColor(0, 0, 0, 1);
+        // gl.clear(gl.COLOR_BUFFER_BIT);
 
         //  Normal Blend Mode
-        gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+        // gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
         this._size = 0;
         this._batch.length = 0;
@@ -355,38 +354,36 @@ export default class WebGLRenderer
         var base = { source: null };
         var nextBase = null;
 
-        // var blend = -1;
-        // var nextBlend = null;
+        var blend = 0;
+        var nextBlend = null;
 
         for (let i = 0; i < this._size; i++)
         {
             //  _batch[i] contains the next texture to be rendered
             nextBase = this._batch[i].baseTexture;
 
-            /*
             nextBlend = this._batch[i].blendMode;
 
             if (blend !== nextBlend)
             {
                 //  Unrolled for speed
-                if (nextBlend === PhaserNano.BLEND_NORMAL)
+                if (nextBlend === BlendModes.NORMAL)
                 {
                     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
                 }
-                else if (nextBlend === PhaserNano.BLEND_ADD)
+                else if (nextBlend === BlendModes.ADD)
                 {
                     gl.blendFunc(gl.SRC_ALPHA, gl.DST_ALPHA);
                 }
-                else if (nextBlend === PhaserNano.BLEND_MULTIPLY)
+                else if (nextBlend === BlendModes.MULTIPLY)
                 {
                     gl.blendFunc(gl.DST_COLOR, gl.ONE_MINUS_SRC_ALPHA);
                 }
-                else if (nextBlend === PhaserNano.BLEND_SCREEN)
+                else if (nextBlend === BlendModes.SCREEN)
                 {
                     gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
                 }
             }
-            */
 
             if (base.source !== nextBase.source)
             {

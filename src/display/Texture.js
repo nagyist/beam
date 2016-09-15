@@ -1,10 +1,12 @@
+import * as BlendModes from '../webgl/BlendModes.js';
+
 export default class Texture {
 
     constructor (baseTexture)
     {
         this.baseTexture = baseTexture;
 
-        // this.blendMode = BLEND_NORMAL;
+        this.blendMode = BlendModes.NORMAL;
 
         this.frame = { x: 0, y: 0, width: baseTexture.width, height: baseTexture.height, sourceWidth: baseTexture.width, sourceHeight: baseTexture.height };
 
