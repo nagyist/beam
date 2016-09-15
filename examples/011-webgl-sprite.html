@@ -24,10 +24,12 @@
 
         image.onload = function ()
         {
-            bob = beam.createSprite(image, 200, 200);
+            var base = beam.createBaseTexture(image);
 
             //  Push the texture onto the GPU
-            renderer.loadTexture(bob.texture.baseTexture);
+            renderer.loadTexture(base);
+
+            bob = beam.createSprite(base, 200, 200);
 
             render();
         };

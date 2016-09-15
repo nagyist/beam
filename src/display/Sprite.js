@@ -7,7 +7,7 @@ export default class Sprite extends BaseTransform {
     /**
      *
      */
-    constructor (source, x = 0, y = 0)
+    constructor (baseTexture, x = 0, y = 0)
     {
         super(x, y);
 
@@ -17,7 +17,7 @@ export default class Sprite extends BaseTransform {
 
         this.tint = [0xffffff, 0xffffff, 0xffffff, 0xffffff];
 
-        this.texture = new Texture(new BaseTexture(source));
+        this.texture = new Texture(baseTexture);
     }
 
     renderWebGL (renderer)

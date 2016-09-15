@@ -24,17 +24,19 @@
 
         image.onload = function ()
         {
+            var base = beam.createBaseTexture(image);
+
+            //  Push the texture onto the GPU
+            renderer.loadTexture(base);
+
             //  Create the sprites
-            for (let i = 0; i < 2000; i++)
+            for (let i = 0; i < 10000; i++)
             {
                 var x = between(0, 800);
                 var y = between(0, 560);
 
-                sprites.push(beam.createSprite(image, x, y));
+                sprites.push(beam.createSprite(base, x, y));
             }
-
-            //  Push the texture onto the GPU
-            renderer.loadTexture(sprites[0].texture.baseTexture);
 
             render();
         };
