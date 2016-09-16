@@ -25,6 +25,13 @@ Can be found in `examples`
 
 ## Change Log
 
+### September 16th 2016
+
+* Removed the need for BaseTexture
+* Optimized WebGLRenderer to compare Texture keys, instead of whole objects
+* Added in TextureManager to help with creating, loading and getting textures
+* Updated previous 3 examples to use new approach
+
 ### September 15th 2016
 
 * WebGL Renderer added

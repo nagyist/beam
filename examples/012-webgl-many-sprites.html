@@ -24,24 +24,24 @@
 
         image.onload = function ()
         {
-            var base = beam.createBaseTexture(image);
-
-            //  Push the texture onto the GPU
-            renderer.loadTexture(base);
+            renderer.textures.add('logo', image);
 
             //  Create the sprites
-            for (let i = 0; i < 10000; i++)
+            for (let i = 0; i < 4000; i++)
             {
-                var x = between(0, 800);
-                var y = between(0, 560);
+                var x = between(-800, 1600);
+                var y = between(0, 570);
 
-                sprites.push(beam.createSprite(base, x, y));
+                sprites.push({
+                    s: beam.createSprite(renderer.textures.create('logo'), x, y),
+                    speed: between(1,10)
+                });
             }
 
             render();
         };
 
-        image.src = 'assets/32x32.png';
+        image.src = 'assets/car90.png';
 
         function render ()
         {
@@ -49,15 +49,15 @@
 
             for (let i = 0; i < sprites.length; i++)
             {
-                sprites[i].x += 2;
+                sprites[i].s.x += sprites[i].speed;
 
-                if (sprites[i].x > 800)
+                if (sprites[i].s.x > 1600)
                 {
-                    sprites[i].x = -32;
-                    sprites[i].y = between(0, 560);
+                    sprites[i].s.x = -800;
+                    sprites[i].s.y = between(0, 570);
                 }
 
-                sprites[i].renderWebGL(renderer);
+                sprites[i].s.renderWebGL(renderer);
             }
 
             renderer.flush();

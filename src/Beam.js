@@ -4,7 +4,10 @@ import WebGLRenderer from './webgl/WebGLRenderer.js';
 import Transform from './transform/Transform.js';
 import Rectangle from './display/Rectangle.js';
 import Sprite from './display/Sprite.js';
-import BaseTexture from './display/BaseTexture.js';
+
+// export const BEAM_AUTO = 0;
+// export const BEAM_CANVAS = 1;
+// export const BEAM_WEBGL = 2;
 
 export default class Beam
 {
@@ -37,14 +40,9 @@ export default class Beam
         return new Rectangle(x, y, width, height, color);
     }
 
-    createBaseTexture (source)
+    createSprite (texture, x = 0, y = 0)
     {
-        return new BaseTexture(source);
-    }
-
-    createSprite (baseTexture, x = 0, y = 0)
-    {
-        return new Sprite(baseTexture, x, y);
+        return new Sprite(texture, x, y);
     }
 
     createCanvasRenderer (width = 256, height = 256, canvas = null, options = {})

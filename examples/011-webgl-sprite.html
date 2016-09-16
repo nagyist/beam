@@ -24,26 +24,23 @@
 
         image.onload = function ()
         {
-            var base = beam.createBaseTexture(image);
+            renderer.textures.add('logo', image);
 
-            //  Push the texture onto the GPU
-            renderer.loadTexture(base);
-
-            bob = beam.createSprite(base, 200, 200);
+            bob = beam.createSprite(renderer.textures.create('logo'), 177, -100);
 
             render();
         };
 
-        image.src = 'assets/32x32.png';
+        image.src = 'assets/logo.png';
 
         function render ()
         {
-            bob.x += 2;
+            bob.y += 2;
 
-            if (bob.x > 800)
+            if (bob.y > 600)
             {
-                bob.x = -32;
-                bob.y = between(0, 560);
+                bob.x = between(0, 800 - 446);
+                bob.y = -100;
             }
 
             renderer.cls();

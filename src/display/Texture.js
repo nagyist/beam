@@ -2,16 +2,16 @@ import * as BlendModes from '../webgl/BlendModes.js';
 
 export default class Texture {
 
-    constructor (baseTexture)
+    constructor (base, blendMode = BlendModes.NORMAL)
     {
-        this.baseTexture = baseTexture;
+        this.base = base;
 
-        this.blendMode = BlendModes.NORMAL;
+        this.blendMode = blendMode;
 
-        this.frame = { x: 0, y: 0, width: baseTexture.width, height: baseTexture.height, sourceWidth: baseTexture.width, sourceHeight: baseTexture.height };
+        this.frame = { x: 0, y: 0, width: base.width, height: base.height, sourceWidth: base.width, sourceHeight: base.height };
 
         //  A per Texture setting that the user can modify without messing with any other Sprite using the same Texture Frame
-        this._crop = { x: this.frame.x, y: this.frame.y, width: this.frame.width, height: this.frame.height };
+        this._crop = { x: 0, y: 0, width: base.width, height: base.height };
 
         this._isCropped = false;
 
@@ -66,8 +66,8 @@ export default class Texture {
 
     updateUVs ()
     {
-        var bw = this.baseTexture.width;
-        var bh = this.baseTexture.height;
+        var bw = this.base.width;
+        var bh = this.base.height;
         
         this.uvs.x0 = this.cropX / bw;
         this.uvs.y0 = this.cropY / bh;

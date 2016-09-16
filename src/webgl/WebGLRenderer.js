@@ -1,4 +1,5 @@
-import * as BlendModes from '../webgl/BlendModes.js';
+import * as BlendModes from './BlendModes.js';
+import TextureManager from './TextureManager.js';
 
 export default class WebGLRenderer
 {
@@ -46,6 +47,8 @@ export default class WebGLRenderer
         this.dirty = true;
 
         this.boot();
+
+        this.textures = new TextureManager(this);
     }
 
     resize (width, height = width)
@@ -90,16 +93,14 @@ export default class WebGLRenderer
             throw new Error('Browser does not support WebGL');
         }
 
-        gl.id = 0;
-
         gl.disable(gl.DEPTH_TEST);
         gl.disable(gl.CULL_FACE);
         gl.enable(gl.BLEND);
 
-        this.gl.viewport(0, 0, this.width, this.height);
+        gl.viewport(0, 0, this.width, this.height);
 
-        this.projection.x =  this.width / 2;
-        this.projection.y =  -this.height / 2;
+        this.projection.x = this.width / 2;
+        this.projection.y = -this.height / 2;
 
         for (let i = 0, j = 0; i < (this.batchSize * 6); i += 6, j += 4)
         {
@@ -132,10 +133,6 @@ export default class WebGLRenderer
     {
         var gl = this.gl;
 
-        //  We could have the projectionVector as a const instead
-        //  'const vec2 projectionVector = vec2(400.0, -300.0);',
-        //  but it assumes the game size never changes. Would avoid a single uniform though.
-
         var vertexSrc = [
             'attribute vec2 aVertexPosition;',
             'attribute vec2 aTextureCoord;',
@@ -155,8 +152,6 @@ export default class WebGLRenderer
             '   vColor = vec4(color * aColor.x, aColor.x);',
             '}'
         ];
-
-        //  Changed to mediump to avoid crashing older Androids (#2147)
 
         var fragmentSrc = [
             'precision mediump float;',
@@ -178,7 +173,7 @@ export default class WebGLRenderer
 
         if (!gl.getProgramParameter(program, gl.LINK_STATUS))
         {
-            console.log("Could not initialise shaders");
+            console.log('Could not initialise shaders');
             return false;
         }
         else
@@ -216,10 +211,10 @@ export default class WebGLRenderer
 
     compileShader (src, type)
     {
-        var gl = this.gl;
-        var src = src.join("\n");
-        var shader = gl.createShader(type);
-        gl.shaderSource(shader, src);
+        let gl = this.gl;
+        let shader = gl.createShader(type);
+
+        gl.shaderSource(shader, src.join('\n'));
         gl.compileShader(shader);
 
         if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
@@ -243,12 +238,13 @@ export default class WebGLRenderer
 
         //  Transparent
         // gl.clearColor(0, 0, 0, 0);
+
         //  Black
-        // gl.clearColor(0, 0, 0, 1);
-        // gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.clearColor(0, 0, 0, 1);
+        gl.clear(gl.COLOR_BUFFER_BIT);
 
         //  Normal Blend Mode
-        // gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+        gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
         this._size = 0;
         this._batch.length = 0;
@@ -351,7 +347,7 @@ export default class WebGLRenderer
         var start = 0;
         var currentSize = 0;
 
-        var base = { source: null };
+        var base = { key: '' };
         var nextBase = null;
 
         var blend = 0;
@@ -360,8 +356,6 @@ export default class WebGLRenderer
         for (let i = 0; i < this._size; i++)
         {
             //  _batch[i] contains the next texture to be rendered
-            nextBase = this._batch[i].baseTexture;
-
             nextBlend = this._batch[i].blendMode;
 
             if (blend !== nextBlend)
@@ -385,11 +379,13 @@ export default class WebGLRenderer
                 }
             }
 
-            if (base.source !== nextBase.source)
+            nextBase = this._batch[i].base;
+
+            if (base.key !== nextBase.key)
             {
                 if (currentSize > 0)
                 {
-                    gl.bindTexture(gl.TEXTURE_2D, base._gl[gl.id]);
+                    gl.bindTexture(gl.TEXTURE_2D, base.texture);
                     gl.drawElements(gl.TRIANGLES, currentSize * 6, gl.UNSIGNED_SHORT, start * 6 * 2);
                 }
 
@@ -403,69 +399,12 @@ export default class WebGLRenderer
 
         if (currentSize > 0)
         {
-            gl.bindTexture(gl.TEXTURE_2D, base._gl[gl.id]);
+            gl.bindTexture(gl.TEXTURE_2D, base.texture);
             gl.drawElements(gl.TRIANGLES, currentSize * 6, gl.UNSIGNED_SHORT, start * 6 * 2);
         }
 
         //  Reset the batch
         this._size = 0;
-    }
-
-    unloadTexture (base)
-    {
-        for (let i = base._gl.length - 1; i >= 0; i--)
-        {
-            let glTexture = base._gl[i];
-
-            if (this.gl && glTexture)
-            {
-                this.gl.deleteTexture(glTexture);
-            }
-        }
-
-        base._gl.length = 0;
-
-        base.dirty();
-    }
-
-    loadTexture (base)
-    {
-        var gl = this.gl;
-
-        if (!base._gl[gl.id])
-        {
-            base._gl[gl.id] = gl.createTexture();
-        }
-
-        gl.bindTexture(gl.TEXTURE_2D, base._gl[gl.id]);
-        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, base.premultipliedAlpha);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, base.source);
-
-        if (base.scaleMode)
-        {
-            //  scaleMode 1 = Nearest
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-        }
-        else
-        {
-            //  scaleMode 0 = Linear
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        }
-
-        if (base._pot)
-        {
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-        }
-        else
-        {
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        }
-
-        base._dirty[gl.id] = false;
     }
 
     handleContextLost (event)

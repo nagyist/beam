@@ -1,5 +1,4 @@
 import BaseTransform from '../transform/BaseTransform.js';
-import BaseTexture from './BaseTexture.js';
 import Texture from './Texture.js';
 
 export default class Sprite extends BaseTransform {
@@ -7,7 +6,7 @@ export default class Sprite extends BaseTransform {
     /**
      *
      */
-    constructor (baseTexture, x = 0, y = 0)
+    constructor (texture, x = 0, y = 0)
     {
         super(x, y);
 
@@ -15,17 +14,22 @@ export default class Sprite extends BaseTransform {
 
         this.alpha = 1;
 
-        this.tint = [0xffffff, 0xffffff, 0xffffff, 0xffffff];
+        this.tint = [ 0xffffff, 0xffffff, 0xffffff, 0xffffff ];
 
-        this.texture = new Texture(baseTexture);
+        this.texture = texture;
     }
 
     renderWebGL (renderer)
     {
+        if (!this.visible || this.alpha <= 0)
+        {
+            return;
+        }
+
         if (renderer._size >= renderer.batchSize)
         {
             renderer.flush();
-            renderer._base = this.texture.baseTexture;
+            renderer._base = this.texture.base;
         }
 
         //  texture anchors
@@ -59,7 +63,7 @@ export default class Sprite extends BaseTransform {
 
     renderCanvas (renderer)
     {
-        if (!this.visible)
+        if (!this.visible || this.alpha <= 0)
         {
             return this;
         }

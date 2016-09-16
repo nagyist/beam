@@ -24,10 +24,15 @@
 
         image.onload = function ()
         {
-            var base = beam.createBaseTexture(image);
+            //  Add the Image into the TextureManager
+            renderer.textures.add('yellow', image);
 
-            //  Push the texture onto the GPU
-            renderer.loadTexture(base);
+            //  Create one single Texture object, which all Sprites can share in this
+            //  example, because none of them are animating, or cropping
+            var texture = renderer.textures.create('yellow');
+
+            //  Additive blend mode
+            texture.blendMode = 1;
 
             //  Create the sprites
             for (let i = 0; i < 1000; i++)
@@ -35,9 +40,7 @@
                 var x = between(-64, 800);
                 var y = between(-64, 600);
 
-                var sprite = beam.createSprite(base, x, y);
-
-                sprite.texture.blendMode = 1;
+                var sprite = beam.createSprite(texture, x, y);
 
                 sprites.push({ s: sprite, r: 2 + Math.random() * 6 });
             }
