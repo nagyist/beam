@@ -1,4 +1,4 @@
-import babel from 'rollup-plugin-babel';
+import buble from 'rollup-plugin-buble';
 import json from 'rollup-plugin-json';
 
 let pkg = require('./package.json');
@@ -9,7 +9,7 @@ export default {
     external: external,
     plugins: [
         json(),
-        babel()
+        buble()
     ],
     targets: [
         {

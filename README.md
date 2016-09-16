@@ -6,11 +6,19 @@
 
 ## To Build
 
-After `npm install`:
+`npm install`
+
+Make sure rollup is available globally:
+
+`npm install rollup --global`
+
+After installing you can build with:
 
 `rollup -c`
 
-Will output the build files to the `dist` folder. Needs an ES6 version of node (such as v5.6+)
+This will output the build files to the `dist` folder.
+
+Note: You need an ES6 version of node to do this, such as v5.6+. Check by running `node -v`, and if it's too low a version, update it.
 
 ## Examples
 
