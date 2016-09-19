@@ -43,6 +43,9 @@
     "rollup-plugin-buble": "^0.13.0",
     "rollup-plugin-istanbul": "^1.0.0",
     "rollup-plugin-json": "^2.0.2",
-    "rollup-watch": "^2.5.0"
+    "rollup-plugin-uglify": "^1.0.1",
+    "rollup-watch": "^2.5.0",
+    "uglify": "^0.1.5",
+    "uglify-js": "^2.7.3"
   }
 }

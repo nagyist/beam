@@ -1,5 +1,7 @@
 import buble from 'rollup-plugin-buble';
 import json from 'rollup-plugin-json';
+import uglify from 'rollup-plugin-uglify';
+import { minify } from 'uglify-js';
 
 let pkg = require('./package.json');
 let external = Object.keys(pkg.dependencies);
